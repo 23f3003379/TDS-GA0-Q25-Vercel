@@ -91,15 +91,17 @@ async def handle(request: Request) -> Dict[str, Any]:
     return {**per_region, "regions": per_region}
  
  
+# Catch-all routes: whatever path Vercel passes to the function (/, /api, /api/index ...)
 @app.post("/")
-async def root_post(request: Request):
+@app.post("/{full_path:path}")
+async def any_post(request: Request, full_path: str = ""):
     return await handle(request)
  
  
-@app.post("/api")
-async def api_post(request: Request):
-    return await handle(request)
- 
+@app.get("/")
+@app.get("/{full_path:path}")
+def any_get(full_path: str = ""):
+    return {"message": "POST {\"regions\": [...], \"threshold_ms\": 180} to this endpoint"}
  
 @app.get("/")
 def root_get():
